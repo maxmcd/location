@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>L</title>
+    <link rel="stylesheet" href="https://www.redditstatic.com/place.qRjWdEogcT8.css">
+</head>
+<body>
+    <div id="place" class="place">
+        <div id="place-container" class="place-container">
+            <!-- #viewer is used to control zooming. -->
+            <div id="place-viewer" class="place-viewer">
+                <!-- #camera is used to control camera positioning -->
+                <div id="place-camera" class="place-camera">
+                    <canvas id="place-canvasse" class="place-canvas"></canvas>
+                </div>
+            </div>
+            <button id="place-mute-button" class="place-mute-button place-uninitialized"></button>
+            <button id="place-notification-button" class='place-notification-button place-uninitialized'></button>
+            <button id="place-zoom-button" class="place-zoom-button place-zoomed-out place-uninitialized">
+                <div id="place-zoom-pulse" class="place-zoom-pulse"></div>
+            </button>
+            <button id="place-camera-button" class="place-camera-button"></button>
+            <div class="place-bottom-toolbar">
+                <!-- This will be a holding container for swatches generated in js -->
+                <div id="place-palette" class="place-palette place-uninitialized">
+                    <div id="place-molly-guard" class="place-molly-guard place-uninitialized"></div>
+                </div>
+                <div id="place-activity-count" class="place-activity-count place-uninitialized"></div>
+                <div id="place-coordinates" class="place-coordinates place-uninitialized"></div>
+                <!-- This will be used to display information about specific tiles -->
+                <div id="place-inspector" class="place-inspector"></div>
+            </div>
+            <!-- This will be used to display the cooldown timer -->
+            <div id="place-timer" class="place-timer"></div>
+        </div>
+        <div id="place-hand-cursor" class="place-hand-cursor"></div>
+        <!-- This will be the cursor element that displays the current color -->
+        <div id="place-hand" class="place-hand">
+            <div id="place-hand-swatch" class="place-hand-swatch"></div>
+        </div>
+    </div>
+    <script src="http://underscorejs.org/underscore-min.js"></script>
+    <script src="http://backbonejs.org/backbone-min.js"></script>
+
+    <script>
+        var r = {
+            config: {"user_websocket_url": null, "feature_preview_comments_in_expandos": null, "ajax_domain": "www.reddit.com", "is_fake": false, "server_time": 1491258806.0, "post_site": "place", "clicktracker_url": "//pixel.redditmedia.com/click", "pref_no_profanity": true, "renderstyle": "html", "requires_eu_cookie_policy": false, "nsfw_media_acknowledged": true, "stats_domain": "https://stats.redditmedia.com", "pref_email_messages": false, "place_active_visitors": 43907, "cur_screen_name": "", "cur_domain": "reddit.com", "feature_new_report_dialog": true, "events_collector_url": "https://events.redditmedia.com/v1", "feature_expando_events": true, "facebook_app_id": "322647334569188", "is_sponsor": false, "place_canvas_width": 1000, "https_forced": true, "user_in_timeout": false, "place_wait_seconds": 0, "user_id": 6309779, "eventtracker_url": "//pixel.redditmedia.com/pixel/of_delight.png", "ad_serving_events_sample_rate": 1.0, "poisoning_canary": "3q", "logged": "maxmcd", "feature_outbound_beacons": false, "advertiser_category": null, "ads_loading_timeout_ms": 5000, "over_18": true, "vote_hash": "KhPpCdEr43nN2Z+qTlSOjcpjH+JJ1UDO8YhD29gbeHchP93cQzTFnUgiu7YHgH6B5K1jA6SvNNCdkbMhuY21OoyV2ER02w5+fsS9P9Mc0zyUwuUhHchUIRfXWMHtMowS3r9d49vyAVKj6EG+jfUICjVP8K4jXVXlfFdkA7YxKWw=", "poisoning_report_mac": "0284cf9c31a42d3ffe33818272c1d9e534f6aba5", "feature_ads_user_matching": false, "events_collector_secret": "thiiM0ahsieSiech1phithe6chahngoo8sah6aid\n", "adtracker_url": "//pixel.redditmedia.com/pixel/of_doom.png", "events_collector_key": "RedditFrontend1", "live_orangereds_pref": true, "feature_post_embed": true, "feature_mobile_native_banner": true, "uitracker_url": "//pixel.redditmedia.com/pixel/of_discovery.png", "cache_policy": "loggedin_www_new", "share_tracking_ts": 1491258806026, "modhash": "lhtemihbj4ca94763d0439eb3526c66d395116f59faddf5e5e", "feature_flatlist_events": false, "store_visits": false, "place_canvas_height": 1000, "anon_eventtracker_url": "//pixel.redditmedia.com/pixel/of_diversity.png", "media_domain": "www.redditmedia.com", "pref_beta": false, "share_tracking_hmac": null, "feature_double_sidebar": false, "feature_lazy_load_listings": false, "send_logs": true, "gold": false, "eu_cookie_max_attempts": 3, "listing_over_18": false, "pageInfo": {"actionName": "hot.GET_listing", "statsVerification": "adfad553bf3b6c42e703170c536073e9c1f952f0", "verification": "adfad553bf3b6c42e703170c536073e9c1f952f0", "statsName": "hot.GET_listing"}, "mweb_blacklist_expressions": ["^/prefs/?", "^/live/?", "/message/compose", "/m/", "^/subreddits/create", "^/gold", "^/advertising", "^/promoted", "^/buttons"], "ads_status": "house_only", "https_endpoint": "https://www.reddit.com", "static_root": "//www.redditstatic.com", "extension": null, "feature_screenview_events": true, "cur_listing": "place", "email_verified": true, "status_msg": {"fetching": "fetching title...", "loading": "loading...", "submitting": "submitting..."}, "place_cooldown": 300, "cur_site": "t5_2sxhs", "enabled_experiments": {"comments_in_hybrid_listings_expandos": null, "comments_in_listings_expandos": null}, "place_websocket_url": "wss://ws-0a5f32bbc2bad0dbb.wss.redditmedia.com/place?m=AQAAxtviWNteDrbfKPSMjOPAR2xoRXMIBG8UyXCNy4pjqcNv0qVI", "stats_sample_rate": "5", "new_window": true, "event_target": {"target_id": 4709008, "target_type": "listing", "target_sort": "hot", "target_fullname": "t5_2sxhs"}, "tracker_url": "//pixel.redditmedia.com/pixel/of_destiny.png?v=vIhPjef0VWjfwVWfLdDXHjx7NtOhLdBdBrEigKubwuEQ0eIp6OZzUfJQ2qbnkCjvZAAZf8a0yGY44TlSuqTuErednWjpBfqE", "eu_cookie": "eu_cookie", "expando_preference": "subreddit_default", "debug": false, "has_subscribed": true, "feature_scroll_events": true},
+            utils: {
+                parseQueryString: function(e) {
+                    e[0] === "?" && (e = e.substr(1));
+                    var t = e.split("&");
+                    return t.reduce(
+                        function(e, t) {
+                            var n = t.split("="), r = n[0], i = n[1];
+                            return r in e ? (e[r] = [].concat(e[r], i)) : (e[r] = i), e;
+                        },
+                        {}
+                    );
+                },
+            }
+        }
+        _.each(["debug", "log", "warn", "error"], function(e) {
+            r[e] = (e != "debug" || r.config.debug) &&
+                window.console &&
+                console[e]
+                ? _.bind(console[e], console)
+                : function() {};
+        })
+        var store = (function () {
+            /*
+                This module uses localStorage, which is synchronous, but exposes an
+                asyncronous API. This is so that we can substitute other storage
+                methods.
+                To override these methods, create another file at:
+                /customize/storage.js
+            */
+
+            var Store = {};
+
+            // Store uses nodebacks...
+            Store.set = function (key, val, cb) {
+                localStorage.setItem(key, JSON.stringify(val));
+                cb();
+            };
+
+            Store.setSafe = Store.set
+
+            // implement in alternative store
+            Store.setBatch = function (map, cb) {
+                Object.keys(map).forEach(function (key) {
+                    localStorage.setItem(key, JSON.stringify(map[key]));
+                });
+                cb(void 0, map);
+            };
+
+            var safeGet = Store.safeGet = window.safeGet = r.safeGet = function (key) {
+                var val = localStorage.getItem(key);
+                try {
+                    return JSON.parse(val);
+                } catch (err) {
+                    console.log(val);
+                    console.error(err);
+                    return val;
+                }
+            };
+
+            Store.get = function (key, cb) {
+                cb(void 0, safeGet(key));
+            };
+
+            // implement in alternative store
+            Store.getBatch = function (keys, cb) {
+                var res = {};
+                keys.forEach(function (key) {
+                    res[key] = safeGet(key);
+                });
+                cb(void 0, res);
+            };
+
+            Store.remove = function (key, cb) {
+                localStorage.removeItem(key);
+                cb();
+            };
+
+            // implement in alternative store
+            Store.removeBatch = function (keys, cb) {
+                keys.forEach(function (key) {
+                    localStorage.removeItem(key);
+                });
+                cb();
+            };
+
+            Store.keys = function (cb) {
+                cb(void 0, Object.keys(localStorage));
+            };
+
+            Store.ready = function (f) {
+                if (typeof(f) === 'function') {
+                    f(void 0, Store);
+                }
+            };
+
+            var changeHandlers = Store.changeHandlers = [];
+
+            Store.change = function (f) {
+                if (typeof(f) !== 'function') {
+                    throw new Error('[Store.change] callback must be a function');
+                }
+                changeHandlers.push(f);
+
+                if (changeHandlers.length === 1) {
+                    // start listening for changes
+                    window.addEventListener('storage', function (e) {
+                        changeHandlers.forEach(function (f) {
+                            f({
+                                key: e.key,
+                                oldValue: e.oldValue,
+                                newValue: e.newValue,
+                            });
+                        });
+                    });
+                }
+            };
+
+            return Store;
+        }());
+    </script>
+    <script
+      src="http://code.jquery.com/jquery-3.2.1.min.js"
+      integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+      crossorigin="anonymous"></script>
+    <script src="/place-base.js"></script>
+    <script src="/place-init.js"></script>
+</body>
+</html>
